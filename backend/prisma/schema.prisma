@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// prisma/schema.prisma
+
+model proveedor {
+  id        Int      @id @default(autoincrement())
+  nombre    String   @db.VarChar(30)
+  estado    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model rol {
+  id        Int      @id @default(autoincrement())
+  nombre    String   @db.VarChar(30)
+  estado    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model menu {
+  id        Int      @id @default(autoincrement())
+  nombre    String   @db.VarChar(30)
+  estado    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model telefono {
+  id            Int         @id @default(autoincrement())
+  numero        String      @db.VarChar(10)
+  module_id     Int
+  module        String      @db.VarChar(50)
+  estado        Boolean     @default(true)
+  usuario       usuario?    @relation(fields: [usuario_id], references: [id])
+  usuario_id    Int?
+  Cliente       cliente?    @relation(fields: [cliente_id], references: [id])
+  cliente_id    Int?
+  Instructor    instructor? @relation(fields: [instructor_id], references: [id])
+  instructor_id Int?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model usuario {
+  id        Int        @id @default(autoincrement())
+  nombre    String     @db.VarChar(30)
+  ap        String     @db.VarChar(50)
+  am        String     @db.VarChar(50)
+  email     String     @db.VarChar(30)
+  password  String     @db.VarChar(100)
+  telefono  telefono[]
+  estado    Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model cliente {
+  id        Int        @id @default(autoincrement())
+  ci        String     @db.VarChar(10)
+  nombre    String     @db.VarChar(30)
+  ap        String     @db.VarChar(50)
+  am        String     @db.VarChar(50)
+  telefono  telefono[]
+  estado    Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model instructor {
+  id        Int        @id @default(autoincrement())
+  ci        String     @db.VarChar(10)
+  nombre    String     @db.VarChar(30)
+  ap        String     @db.VarChar(50)
+  am        String     @db.VarChar(50)
+  telefono  telefono[]
+  estado    Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model plan {
+  id          Int               @id @default(autoincrement())
+  cod_plan    String            @db.VarChar(100)
+  nombre      String            @db.VarChar(30)
+  descripcion String
+  precio      Float             @db.DoublePrecision
+  descuento   Int
+  estado      Boolean           @default(true)
+  disciplinas plan_disciplina[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model disciplina {
+  id          Int               @id @default(autoincrement())
+  nombre      String            @db.VarChar(30)
+  descripcion String
+  estado      Boolean           @default(true)
+  planes      plan_disciplina[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model plan_disciplina {
+  Plan          plan       @relation(fields: [plan_id], references: [id])
+  plan_id       Int
+  disciplina    disciplina @relation(fields: [disciplina_id], references: [id])
+  disciplina_id Int
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@id([plan_id, disciplina_id])
+}
+
+model horario {
+  id          Int      @id @default(autoincrement())
+  hora_inicio DateTime
+  hora_fin    DateTime
+  dia         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
